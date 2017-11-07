@@ -75,8 +75,16 @@
     NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
     NSData *receiptData = [NSData dataWithContentsOfURL:receiptURL];
     NSString *encReceipt = [receiptData base64EncodedStringWithOptions:0];
+    
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    formatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    formatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+    formatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss'Z'";
+    NSString *transactionDateString = [formatter stringFromDate:transaction.transactionDate];
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:@{
                                                                                                                    @"transactionId": NILABLE(transaction.transactionIdentifier),
+                                                                                                                   @"transactionDate": NILABLE(transactionDateString),
+                                                                                                                   @"transactionState": NILABLE([NSNumber numberWithInteger:transaction.transactionState]),
                                                                                                                    @"receipt": NILABLE(encReceipt)
                                                                                                                    }];
     [pluginResult setKeepCallbackAsBool:YES];
